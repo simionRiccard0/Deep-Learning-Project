@@ -1,0 +1,21 @@
+#--- DATA ---
+# We ignore the data folder to prevent collapsing Github with heavy files (Slow pushes, github's file limit)
+data/
+*.csv
+*.txt
+fullset_*
+
+# --- PYTHON & ENVIRONMENTS ---
+venv/
+env/
+.env
+--pychache--/
+*.pyc
+
+# --- JUPYTER NOTEBOOKS ---
+
+.ipynb_checkpoints/
+
+# --- SYSTEM ---
+.DS_Store
+Thumbs.db
