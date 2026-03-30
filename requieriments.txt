@@ -1,0 +1,6 @@
+#needed libraries
+pandas
+numpy
+scikit-learn
+matplotlib
+tensorflow  # or torch, depends on what we'll like to use
