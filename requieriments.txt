@@ -1,6 +1,0 @@
-#needed libraries
-pandas
-numpy
-scikit-learn
-matplotlib
-torch  # we must use this one for the project
