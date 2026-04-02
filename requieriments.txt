@@ -3,4 +3,4 @@ pandas
 numpy
 scikit-learn
 matplotlib
-tensorflow  # or torch, depends on what we'll like to use
+torch  # depends on what we'll like to use
