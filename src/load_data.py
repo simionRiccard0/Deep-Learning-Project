@@ -16,6 +16,7 @@ def load_viral_dataset(filename):
     path = get_data_path(filename)
 
     print(f"Reading {filename}...")
+    print(f"DEBUG: Buscando el archivo en: {os.path.abspath(path)}")
 
     
 
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
     try:
 
-        X, y = load_viral_dataset('fullset_train')
+        X, y = load_viral_dataset('fullset_train.csv')
 
         print(f"Success. X: {X.shape}, y: {y.shape}")
 
