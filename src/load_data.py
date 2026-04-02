@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-
+# We have to read the data and split the id from the DNA sequence
 def get_data_path(filename):
 
     "Obtains the absolute row from data files."
@@ -28,7 +28,7 @@ def load_viral_dataset(filename):
 
     X = df.iloc[:, :-1].values # Sequences
 
-    y = df.iloc[:, -1].values  # Lables (Last row)
+    y = df.iloc[:, :-1].values  # Lables (Last row)
 
     
 
