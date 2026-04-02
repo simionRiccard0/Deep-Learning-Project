@@ -3,4 +3,4 @@ pandas
 numpy
 scikit-learn
 matplotlib
-torch  # depends on what we'll like to use
+torch  # we must use this one for the project
