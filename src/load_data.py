@@ -49,9 +49,12 @@ if __name__ == "__main__":
         X, Y = load_viral_dataset('fullset_train.csv')
 
         print(f"Success. X: {X.shape}, y: {Y.shape}")
-        print(f"Sequences: {X.head()}")
-
-
+        print("\n" + "="*30)
+        print("✅ Data loaded")
+        print("="*30)     
+        print(f"Loaded samples: {len(X)}")
+        print(f"First sequence (DNA): {X[0][:60]}")
+        print(f"Its label: {Y[0]}")
     except Exception as e:
 
         print(f"Error: No files found on /data \n{e}")
