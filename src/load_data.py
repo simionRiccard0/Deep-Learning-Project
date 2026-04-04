@@ -30,9 +30,9 @@ def load_viral_dataset(filename):
     # Column 1: DNA Sequence (X)
     # Column 2: Binary label to decide whether is a virus or not (Y)    
 
-    X = df.iloc[:, :1].values # Sequences
+    X = df.iloc[:, 1].values # Sequences
 
-    Y = df.iloc[:, :2].values  # Labels (Last row)
+    Y = df.iloc[:, 2].values  # Labels (Last row)
 
     
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         X, Y = load_viral_dataset('fullset_train.csv')
 
         print(f"Success. X: {X.shape}, y: {Y.shape}")
-        print(f"Number of sequences: {len(X)}")
+        print(f"Sequences: {X.head()}")
 
 
     except Exception as e:
