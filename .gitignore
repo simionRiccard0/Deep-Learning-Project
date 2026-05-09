@@ -19,3 +19,6 @@ env/
 # --- SYSTEM ---
 .DS_Store
 Thumbs.db
+
+#Ignore the cloning of the ViraMiner repository (if you cloned it inside this project)
+ViraMiner/
