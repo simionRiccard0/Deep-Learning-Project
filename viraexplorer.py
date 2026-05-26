@@ -452,7 +452,7 @@ for epoch in range(START_EPOCH, EPOCHS):
         )
 
         print(
-            f"  ✓ Saved new best: {best_auc:.4f}"
+            f"  Saved new best: {best_auc:.4f}"
         )
 
     torch.save({
