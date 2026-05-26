@@ -360,11 +360,11 @@ if os.path.exists(CHECKPOINT_PATH):
 
     print(
         f"Resumed from epoch {START_EPOCH} "
-        f"| Best AUC so far: {best_auc:.4f}"
+        f"Best AUC so far: {best_auc:.4f}"
     )
 
 else:
-    print("No checkpoint found — starting from scratch")
+    print("No checkpoint found: starting from scratch")
 
 print(f"Starting from epoch {START_EPOCH}")
 
@@ -387,7 +387,7 @@ for epoch in range(START_EPOCH, EPOCHS):
 
         optimizer.zero_grad()
 
-        with torch.amp.autocast("cuda"):
+        with torch.amp.autocast("cuda"): 
             loss = criterion(
                 model(X_batch),
                 y_batch
@@ -471,15 +471,15 @@ for epoch in range(START_EPOCH, EPOCHS):
     if counter >= patience:
 
         print(
-            f"Early stopping at epoch {epoch+1} | "
+            f"Early stopping at epoch {epoch+1} "
             f"Best Val AUC: {best_auc:.4f}"
         )
 
         break
 
 print(
-    f"\nTraining complete | "
-    f"Best Val AUC: {best_auc:.4f}"
+    f"\nTraining complete"
+    f"\nBest Val AUC: {best_auc:.4f}"
 )
 
 print("\nRunning test set evaluation...")
@@ -542,11 +542,10 @@ tn, fp, fn, tp = confusion_matrix(
     preds_bin
 ).ravel()
 
-print("=" * 45)
+print("=" * 60)
 
 print(
     f"  Test AUROC        : {auroc:.4f}   "
-    f"(ViraMiner: 0.923)"
 )
 
 print(f"  Test AUPRC        : {auprc:.4f}")
@@ -567,7 +566,7 @@ print(
     f"{2*tp/(2*tp+fp+fn):.4f}"
 )
 
-print("=" * 45)
+print("=" * 60)
 
 print(classification_report(
     targets,
