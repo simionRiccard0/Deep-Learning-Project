@@ -599,12 +599,12 @@ axes[0].plot(
     label='Random (AUC=0.500)'
 )
 
-axes[0].axvline(
-    x=0.077,
+axes[0].text(
+    0.55,
+    0.1,
+    'ViraMiner AUC = 0.923',
     color='red',
-    linestyle='--',
-    alpha=0.7,
-    label='ViraMiner AUC=0.923'
+    bbox=dict(facecolor='white', alpha=0.8)
 )
 
 axes[0].set_xlabel('False Positive Rate')
