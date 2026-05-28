@@ -2,6 +2,14 @@
 
 ViraExplorer is a tool designed to identify and analyze viral sequences from metagenomic data in human samples. An ensemble of Deep Learning models is applied to raw DNA sequences.
 
+The framework combines:
+
+Multi-scale Convolutional Neural Networks (CNNs)
+Transformer Encoder layers
+Feature fusion through fully connected layers
+
+The model operates directly on raw DNA nucleotide sequences using one-hot encoding, without requiring handcrafted biological features.
+
 ## Installation / Requirements
 
 No specific version of Python/PyTorch is required.
@@ -20,19 +28,92 @@ torch == 2.10.0
 
 ### Training
 
-See the viraexplorer.py file. (SCRIVERE DETTAGLI)
+The entire training pipeline is implemented in the viraexplorer.py script.
+The script automatically performs:
+    - Dataset loading
+    - DNA sequence preprocessing
+    - One-hot encoding of nucleotide sequences
+    - Online data augmentation
+    - Model training and validation
+    - Automatic checkpoint saving
+    - Early stopping
+    - Test set evaluation
+    - ROC and Precision-Recall curve generation
 
-## Reproduce Paper Results (Ensemble)
+### Model Architecture
+ViraExplorer is composed of three main branches:
+
+1. Pattern Branch
+
+A CNN branch designed to detect discriminative viral sequence motifs using:
+
+Kernel sizes: 6, 12, 18, 24
+512 filters per convolution
+Adaptive Max Pooling
+
+2. Frequency Branch
+
+A second CNN branch focused on capturing frequency-related sequence information using:
+
+Kernel sizes: 6, 12, 18, 24
+256 filters per convolution
+Adaptive Average Pooling
+
+3. Transformer Branch
+
+A Transformer Encoder branch used to model long-range dependencies in DNA sequences.
+
+Features include:
+
+Learnable positional embeddings
+CLS token representation
+Multi-head self-attention
+4 Transformer encoder layers
+8 attention heads
+
+The outputs of all branches are concatenated and passed through fully connected layers for binary classification (virus / non-virus).
+
+### Input Representation
+DNA sequences are one-hot encoded
+
+### Data Augmentation
+Online augmentation is applied during training to improve generalization.
+
+Implemented augmentations:
+
+Reverse complement transformation
+Random positional shifts between -5 and +5 nucleotides
+
+## Reproduce Paper Results
 
 To reproduce the results, simply run:
 
 ```run_vira.slurm```
 
+The SLURM script launches the complete training pipeline on GPU infrastructure.
 ---
 
 ## Dataset description
 
-The original ViraMiner dataset was used with augmented datapoints. (ADD DETAILS)
+The original ViraMiner dataset was used with augmented datapoints. 
+Dataset files:
+
+fullset_train.csv
+fullset_validation.csv
+fullset_test.csv
+
+Each dataset sample contains:
+
+Column	Description
+0	    Sequence identifier
+1	    DNA sequence
+2	    Binary label (virus / non-virus)
+
+Additional online augmentation is dynamically applied during training using:
+
+Reverse complement augmentation
+Random positional shifts
+
 <br>
 (Tampuu A, Bzhalava Z, Dillner J, Vicente R (2019) ViraMiner: Deep learning on raw DNA sequences for identifying viral genomes in human samples. PLOS ONE 14(9): e0222271. https://doi.org/10.1371/journal.pone.0222271)
 
