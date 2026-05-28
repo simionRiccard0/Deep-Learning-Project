@@ -70,7 +70,6 @@ To reproduce the results, simply run:
 ```run_vira.slurm```
 
 The SLURM script launches the complete training pipeline on GPU infrastructure.
----
 
 ## Dataset description
 
