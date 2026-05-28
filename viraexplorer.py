@@ -17,6 +17,10 @@ from sklearn.metrics import (
     confusion_matrix, classification_report
 )
 
+# ================= #
+# DATASET MANAGEMENT (Part 1) #
+# ================= #
+
 SAVE_DIR        = "/home/simionricc/virproject/"
 BEST_MODEL_PATH = os.path.join(SAVE_DIR, "best_viraexplorer_v2.pth")
 CHECKPOINT_PATH = os.path.join(SAVE_DIR, "checkpoint.pth")
@@ -29,6 +33,10 @@ print("Train shape:", train.shape)
 print("Sequence length:", len(train[1][0]))
 print("\nClass balance:")
 print(train[2].value_counts())
+
+# ================= #
+# DATA REPRESENTATION #
+# ================= #
 
 # DNA one-hot encoding
 mapping = {
@@ -61,6 +69,10 @@ def encode_sequence(seq, augment=False):
         encoded.append([0,0,0,0])
 
     return encoded
+
+# ================= #
+# DATASET MANAGEMENT (Part 2) #
+# ================= #
 
 # Preparing the dataset
 
@@ -103,6 +115,10 @@ test_loader = DataLoader(
     shuffle=False,
     num_workers=2
 )
+
+# ================= #
+# MODEL DEFINITION #
+# ================= #
 
 # CNN Branches
 
@@ -284,6 +300,10 @@ class FocalLoss(nn.Module):
 
 EPOCHS        = 120
 WARMUP_EPOCHS = 5
+
+# ================= #
+# MODEL TRAINING #
+# ================= #
 
 device = torch.device(
     "cuda" if torch.cuda.is_available() else "cpu"
@@ -508,13 +528,9 @@ preds   = []
 targets = []
 
 with torch.no_grad():
-
     for X, y in test_loader:
-
         probs = torch.sigmoid(model(X.to(device)))
-
         preds.extend(probs.cpu().numpy().flatten())
-
         targets.extend(y.numpy())
 
 preds   = np.array(preds)
