@@ -511,42 +511,26 @@ with torch.no_grad():
 
     for X, y in test_loader:
 
-        probs = torch.sigmoid(
-            model(X.to(device))
-        )
+        probs = torch.sigmoid(model(X.to(device)))
 
-        preds.extend(
-            probs.cpu().numpy().flatten()
-        )
+        preds.extend(probs.cpu().numpy().flatten())
 
-        targets.extend(
-            y.numpy()
-        )
+        targets.extend(y.numpy())
 
 preds   = np.array(preds)
 targets = np.array(targets)
 
 auroc = roc_auc_score(targets, preds)
 
-auprc = average_precision_score(
-    targets,
-    preds
-)
+auprc = average_precision_score(targets, preds)
 
-prec, rec, thresh = precision_recall_curve(
-    targets,
-    preds
-)
+prec, rec, thresh = precision_recall_curve(targets, preds)
 
-f1s = 2 * prec * rec / (
-    prec + rec + 1e-8
-)
+f1s = 2 * prec * rec / (prec + rec + 1e-8)
 
 best_thresh = thresh[np.argmax(f1s)]
 
-preds_bin = (
-    preds >= best_thresh
-).astype(int)
+preds_bin = (preds >= best_thresh).astype(int)
 
 tn, fp, fn, tp = confusion_matrix(
     targets,
@@ -585,15 +569,9 @@ print(classification_report(
     target_names=["non-virus","virus"]
 ))
 
-fig, axes = plt.subplots(
-    1, 2,
-    figsize=(12, 5)
-)
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-fpr, tpr, _ = roc_curve(
-    targets,
-    preds
-)
+fpr, tpr, _ = roc_curve(targets, preds)
 
 axes[0].plot(
     fpr,
@@ -638,9 +616,7 @@ axes[1].plot(
 axes[1].set_xlabel('Recall')
 axes[1].set_ylabel('Precision')
 
-axes[1].set_title(
-    'Precision-Recall Curve — Test Set'
-)
+axes[1].set_title('Precision-Recall Curve — Test Set')
 
 axes[1].legend()
 
@@ -648,15 +624,8 @@ axes[1].grid(alpha=0.3)
 
 plt.tight_layout()
 
-plot_path = os.path.join(
-    SAVE_DIR,
-    "test_evaluation.png"
-)
+plot_path = os.path.join(SAVE_DIR, "test_evaluation.png")
 
-plt.savefig(
-    plot_path,
-    dpi=150,
-    bbox_inches='tight'
-)
+plt.savefig(plot_path, dpi=150, bbox_inches='tight')
 
 print(f"\nPlot saved to {plot_path}")
