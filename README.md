@@ -26,8 +26,7 @@ See the viraexplorer.py file. (SCRIVERE DETTAGLI)
 
 To reproduce the results, simply run:
 
-```python
-python scripts/viraexplorer.py
+```run_vira.slurm
 ```
 
 ---
