@@ -30,6 +30,7 @@ print("Sequence length:", len(train[1][0]))
 print("\nClass balance:")
 print(train[2].value_counts())
 
+# DNA one-hot encoding
 mapping = {
     "A":[1,0,0,0],
     "C":[0,1,0,0],
@@ -38,11 +39,13 @@ mapping = {
     "N":[0,0,0,0]
 }
 
-MAX_LEN = 300
+MAX_LEN = 300 # Length of the base pair contigs
 
+# Sequence encoding
 def encode_sequence(seq, augment=False):
-    complement = {'A':'T','T':'A','C':'G','G':'C','N':'N'}
+    complement = {'A':'T','T':'A','C':'G','G':'C','N':'N'} # Reverse complement mapping
 
+    # Reverse complement augmentation
     if augment and random.random() > 0.5:
         seq = ''.join(complement.get(b,'N') for b in reversed(seq))
 
@@ -58,6 +61,8 @@ def encode_sequence(seq, augment=False):
         encoded.append([0,0,0,0])
 
     return encoded
+
+# Preparing the dataset
 
 class DNADataset(Dataset):
     def __init__(self, dataframe, augment=False):
@@ -98,6 +103,8 @@ test_loader = DataLoader(
     shuffle=False,
     num_workers=2
 )
+
+# CNN Branches
 
 class PatternBranch(nn.Module):
     def __init__(self, dropout):
@@ -167,6 +174,8 @@ class FrequencyBranch(nn.Module):
 
         return self.fc(self.pool(x).squeeze(-1))
 
+# Transformer branch
+
 class TransformerBranch(nn.Module):
     def __init__(
         self,
@@ -215,6 +224,8 @@ class TransformerBranch(nn.Module):
         return self.out(
             self.norm(self.transformer(x))[:,0,:]
         )
+
+# ViraExplorer Model (CNN Pattern branch + CNN Frequency branch + Transformer)
 
 class ViraExplorer(nn.Module):
     def __init__(self, cnn_dropout=0.25, transformer_dropout=0.1):
