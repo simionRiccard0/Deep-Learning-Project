@@ -372,7 +372,8 @@ for p in model.transformer.parameters():
 if os.path.exists(CHECKPOINT_PATH):
     ckpt = torch.load(
         CHECKPOINT_PATH,
-        map_location=device
+        map_location=device,
+        weights_only=True
     )
 
     model.load_state_dict(ckpt['model_state'])
@@ -485,6 +486,8 @@ for epoch in range(START_EPOCH, EPOCHS):
         print(
             f"  Saved new best: {best_auc:.4f}"
         )
+    else:
+         counter += 1
 
     torch.save({
         'epoch':           epoch,
@@ -495,9 +498,7 @@ for epoch in range(START_EPOCH, EPOCHS):
         'counter':         counter,
     }, CHECKPOINT_PATH)
 
-    counter += (
-        0 if auc > best_auc else 1
-    )
+   
 
     if counter >= patience:
 
@@ -518,7 +519,8 @@ print("\nRunning test set evaluation...")
 model.load_state_dict(
     torch.load(
         BEST_MODEL_PATH,
-        map_location=device
+        map_location=device,
+        weights_only=True
     )
 )
 
