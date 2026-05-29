@@ -40,7 +40,7 @@ Other versions may work but have not been tested.
 
 ```bash
 # 1. Clone this repository
-git clone https://github.com/<your-username>/viraexplorer.git
+git clone https://github.com/simionRiccard0/viraexplorer.git
 cd viraexplorer
 
 # 2. Install dependencies
