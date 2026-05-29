@@ -113,8 +113,7 @@ test_loader = DataLoader(
     DNADataset(test),
     batch_size=64,
     shuffle=False,
-    num_workers=2,
-    pin_memory=True
+    num_workers=2
 )
 
 # ================= #
@@ -360,7 +359,7 @@ scheduler = torch.optim.lr_scheduler.LambdaLR(
     lr_lambda
 )
 
-scaler = torch.amp.GradScaler('cuda') if torch.cuda.is_available() else torch.amp.GrandScaler('cpu')
+scaler = torch.amp.GradScaler('cuda')
 
 best_auc    = 0
 patience    = 15
@@ -373,8 +372,7 @@ for p in model.transformer.parameters():
 if os.path.exists(CHECKPOINT_PATH):
     ckpt = torch.load(
         CHECKPOINT_PATH,
-        map_location=device,
-        weights_only=True
+        map_location=device
     )
 
     model.load_state_dict(ckpt['model_state'])
@@ -420,7 +418,7 @@ for epoch in range(START_EPOCH, EPOCHS):
 
         optimizer.zero_grad()
 
-        with torch.amp.autocast(device.type): 
+        with torch.amp.autocast("cuda"): 
             loss = criterion(
                 model(X_batch),
                 y_batch
@@ -487,8 +485,6 @@ for epoch in range(START_EPOCH, EPOCHS):
         print(
             f"  Saved new best: {best_auc:.4f}"
         )
-    else:
-         counter += 1
 
     torch.save({
         'epoch':           epoch,
@@ -499,7 +495,9 @@ for epoch in range(START_EPOCH, EPOCHS):
         'counter':         counter,
     }, CHECKPOINT_PATH)
 
-   
+    counter += (
+        0 if auc > best_auc else 1
+    )
 
     if counter >= patience:
 
@@ -520,8 +518,7 @@ print("\nRunning test set evaluation...")
 model.load_state_dict(
     torch.load(
         BEST_MODEL_PATH,
-        map_location=device,
-        weights_only=True
+        map_location=device
     )
 )
 
