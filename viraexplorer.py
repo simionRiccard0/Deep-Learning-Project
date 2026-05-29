@@ -419,7 +419,7 @@ for epoch in range(START_EPOCH, EPOCHS):
 
         optimizer.zero_grad()
 
-        with torch.amp.autocast("cuda"): 
+        with torch.amp.autocast(device.type): 
             loss = criterion(
                 model(X_batch),
                 y_batch
