@@ -359,7 +359,7 @@ scheduler = torch.optim.lr_scheduler.LambdaLR(
     lr_lambda
 )
 
-scaler = torch.amp.GradScaler('cuda')
+scaler = torch.amp.GradScaler('cuda') if torch.cuda.is_available() else torch.amp.GrandScaler('cpu')
 
 best_auc    = 0
 patience    = 15
