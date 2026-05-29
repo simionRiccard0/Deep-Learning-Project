@@ -4,7 +4,7 @@ ViraExplorer is a deep learning framework for identifying viral sequences in met
 
 The model combines three parallel branches — two multi-scale CNNs and a Transformer encoder — whose representations are fused by a fully connected classifier for binary (virus / non-virus) prediction.
 
-> **Result:** ViraExplorer achieves a test AUROC of **0.XXX** on the ViraMiner benchmark dataset, outperforming the ViraMiner baseline (AUROC = 0.923).
+> **Result:** ViraExplorer achieves a test AUROC of **0.939** on the ViraMiner benchmark dataset, outperforming the ViraMiner baseline (AUROC = 0.923).
 
 ---
 
@@ -22,7 +22,7 @@ The model combines three parallel branches — two multi-scale CNNs and a Transf
 
 ## Requirements
 
-The following library versions were used (Python 3.12.13):
+Python 3.12.13 was used along with the following library versions (based on Colab 2026.04 release `freeze`, see [googlecolab/backend-info](https://github.com/googlecolab/backend-info)):
 
 | Library      | Version |
 |--------------|---------|
@@ -90,12 +90,9 @@ The script automatically handles:
 - Checkpoint saving (resumes automatically if interrupted)
 - Test set evaluation with ROC and Precision-Recall curve generation
 
-All outputs are saved to the directory defined by SAVE_DIR at the top of viraexplorer.py:
-Before running, update SAVE_DIR to a directory that exists on your system. 
-The script will create it automatically with os.makedirs(SAVE_DIR, exist_ok=True) 
-if it does not exist, but the parent path must be accessible to your user.
+All outputs are saved to the directory defined by variable `SAVE_DIR` at the top of viraexplorer.py. Before running, update `SAVE_DIR` to an existing path on the user's system. The script will create it automatically with `os.makedirs(SAVE_DIR, exist_ok=True)` if it does not exist, but the parent path must be accessible to the current user.
 
-Output files written to SAVE_DIR:
+Output files written to `SAVE_DIR`:
 
 | File                       | Description                                  |
 |----------------------------|----------------------------------------------|
