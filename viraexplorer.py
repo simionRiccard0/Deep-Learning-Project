@@ -113,7 +113,8 @@ test_loader = DataLoader(
     DNADataset(test),
     batch_size=64,
     shuffle=False,
-    num_workers=2
+    num_workers=2,
+    pin_memory=True
 )
 
 # ================= #
