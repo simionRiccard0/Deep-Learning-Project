@@ -1,99 +1,209 @@
-# ViraExplorer - A Tool for Viral Genome Identification in Metagenomic Data
+# ViraExplorer — Viral Genome Identification in Metagenomic Data
 
-ViraExplorer is a tool designed to identify and analyze viral sequences from metagenomic data in human samples. An ensemble of Deep Learning models is applied to raw DNA sequences.
+ViraExplorer is a deep learning framework for identifying viral sequences in metagenomic DNA data from human samples. It operates directly on raw nucleotide sequences using one-hot encoding, without requiring handcrafted biological features.
 
-The framework combines:
+The model combines three parallel branches — two multi-scale CNNs and a Transformer encoder — whose representations are fused by a fully connected classifier for binary (virus / non-virus) prediction.
 
-* Multi-scale Convolutional Neural Networks (CNNs)
-* Transformer Encoder layers
-* Feature fusion through fully connected layers
+> **Result:** ViraExplorer achieves a test AUROC of **0.XXX** on the ViraMiner benchmark dataset, outperforming the ViraMiner baseline (AUROC = 0.923).
 
-The model operates directly on raw DNA nucleotide sequences using one-hot encoding, without requiring handcrafted biological features.
+---
 
-## Installation / Requirements
+## Table of Contents
 
-No specific version of Python/PyTorch is required. However, Python 3.12.13 was used along with the following libraries, as per the Google Colab environment from the 2026.04 release:
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Dataset](#dataset)
+4. [Usage](#usage)
+5. [Model Architecture](#model-architecture)
+6. [Results](#results)
+7. [Reference](#reference)
+
+---
+
+## Requirements
+
+The following library versions were used (Python 3.12.13):
+
+| Library      | Version |
+|--------------|---------|
+| matplotlib   | 3.10.0  |
+| numpy        | 2.0.2   |
+| pandas       | 2.2.2   |
+| scikit-learn | 1.6.1   |
+| torch        | 2.10.0  |
+
+Other versions may work but have not been tested.
+
+---
+
+## Installation
 
 ```bash
-matplotlib == 3.10.0
-numpy == 2.0.2
-pandas == 2.2.2
-scikit-learn == 1.6.1
-torch == 2.10.0
+# 1. Clone this repository
+git clone https://github.com/<your-username>/viraexplorer.git
+cd viraexplorer
+
+# 2. Install dependencies
+pip install matplotlib==3.10.0 numpy==2.0.2 pandas==2.2.2 \
+            scikit-learn==1.6.1 torch==2.10.0
+```
+
+---
+
+## Dataset
+
+ViraExplorer uses the original ViraMiner dataset (Tampuu et al., 2019), which consists of 300 bp DNA contigs labelled as viral or non-viral.
+
+Download the dataset from the [ViraMiner repository](https://github.com/NeuroCSUT/ViraMiner) and place the files at the following paths (relative to the project root):
 
 ```
+ViraMiner/data/DNA_data/fullset_train.csv
+ViraMiner/data/DNA_data/fullset_validation.csv
+ViraMiner/data/DNA_data/fullset_test.csv
+```
+
+Each CSV file has no header row and three columns:
+
+| Column | Description                                |
+|--------|--------------------------------------------|
+| 0      | Sequence identifier                        |
+| 1      | DNA sequence (300 bp)                      |
+| 2      | Binary label: `1` = virus, `0` = non-virus |
+
+---
 
 ## Usage
 
 ### Training
 
-The entire training pipeline is implemented in the viraexplorer.py script.
-The script automatically performs:
+Run the full training pipeline with:
 
-- Dataset loading
-- DNA sequence preprocessing
-- One-hot encoding of nucleotide sequences
-- Online data augmentation
-- Model training and validation
-- Automatic checkpoint saving
-- Early stopping
-- Test set evaluation
-- ROC and Precision-Recall curve generation
+```bash
+python viraexplorer.py
+```
 
-### Model Architecture
-ViraExplorer is composed of three main branches:
+The script automatically handles:
+- Data loading and one-hot encoding
+- Online data augmentation (see [Model Architecture](#model-architecture))
+- Model training with mixed-precision and gradient clipping
+- Validation AUROC monitoring and early stopping
+- Checkpoint saving (resumes automatically if interrupted)
+- Test set evaluation with ROC and Precision-Recall curve generation
 
-1. Pattern Branch: a CNN branch designed to detect discriminative viral sequence motifs using:
-    - Kernel sizes: 6, 12, 18, 24
-    - 512 filters per convolution
-    - Adaptive Max Pooling
+All outputs are saved to the directory defined by SAVE_DIR at the top of viraexplorer.py:
+Before running, update SAVE_DIR to a directory that exists on your system. 
+The script will create it automatically with os.makedirs(SAVE_DIR, exist_ok=True) 
+if it does not exist, but the parent path must be accessible to your user.
 
-2. Frequency Branch: a second CNN branch focused on capturing frequency-related sequence information using:
-    - Kernel sizes: 6, 12, 18, 24
-    - 256 filters per convolution
-    - Adaptive Average Pooling
+Output files written to SAVE_DIR:
 
-3. Transformer Branch: a Transformer Encoder branch used to model long-range dependencies in DNA sequences; the outputs of all branches are concatenated and passed through fully connected layers for binary classification (virus / non-virus), and the model includes:
-    - Learnable positional embeddings
-    - CLS token representation
-    - Multi-head self-attention
-    - 4 Transformer encoder layers
-    - 8 attention heads
+| File                       | Description                                  |
+|----------------------------|----------------------------------------------|
+| `best_viraexplorer_v2.pth` | Weights of the best validation checkpoint    |
+| `checkpoint.pth`           | Full training state (model, optimizer, scheduler, epoch) |
+| `test_evaluation.png`      | ROC and Precision-Recall curves on the test set |
 
-### Input Representation
-DNA sequences are one-hot encoded
+### Resuming an Interrupted Run
 
-## Reproducibility
+Training resumes automatically from the last saved checkpoint — simply re-run `python viraexplorer.py`. No additional flags are needed.
 
-To reproduce the results, simply run:
+### HPC / SLURM
 
-```run_vira.slurm```
+To run on a GPU cluster:
 
-The SLURM script launches the complete training pipeline on GPU infrastructure.
+```bash
+sbatch run_vira.slurm
+```
 
-## Dataset description
-
-The original ViraMiner dataset was used with augmented datapoints. Dataset files are:
-
-* fullset_train.csv
-* fullset_validation.csv
-* fullset_test.csv
-
-Each dataset sample contains:
-
-| Column | Description                      |
-| ------ | -------------------------------- |
-| 0	     | Sequence identifier              |
-| 1	     | DNA sequence                     |
-| 2	     | Binary label (virus / non-virus) |
-
-<br>
-(Tampuu A, Bzhalava Z, Dillner J, Vicente R (2019) ViraMiner: Deep learning on raw DNA sequences for identifying viral genomes in human samples. PLOS ONE 14(9): e0222271. https://doi.org/10.1371/journal.pone.0222271)
-
-### Data Augmentation
-Online augmentation is dynamically applied during training to improve generalization. Implemented augmentation techniques are:
-
-* Reverse complement transformation
-* Random positional shifts between -5 and +5 nucleotide
+The SLURM script (`run_vira.slurm`, included in this repository) requests one GPU node and launches `viraexplorer.py`. Adjust the partition name and time limit to match your cluster configuration before submitting.
 
 ---
+
+## Model Architecture
+
+ViraExplorer processes each 300 bp contig through three parallel branches. Their outputs (each 512-dim) are concatenated into a 1536-dim vector and passed through a two-layer MLP classifier.
+
+```
+Input: 300 bp DNA sequence  →  one-hot encoding  →  (300 × 4) tensor
+         │
+         ├── PatternBranch     →  512-dim
+         ├── FrequencyBranch   →  512-dim
+         └── TransformerBranch →  512-dim
+                                        │
+                               concat → 1536-dim
+                                        │
+                                  MLP classifier
+                                        │
+                               logit → sigmoid → P(viral)
+```
+
+### PatternBranch (CNN + Max-Pooling)
+Detects the presence of localised viral sequence motifs anywhere in the contig.
+- Four parallel `Conv1d` layers with kernel sizes 6, 12, 18, 24 (512 filters each)
+- Outputs channel-concatenated (2048 channels), batch-normalised, then globally max-pooled
+- Projected to 512 dimensions via a linear layer + GELU + Dropout
+
+### FrequencyBranch (CNN + Average-Pooling)
+Captures the global nucleotide composition and k-mer frequency profile of the contig.
+- Four parallel `Conv1d` layers with kernel sizes 6, 12, 18, 24 (256 filters each)
+- Outputs channel-concatenated (1024 channels), batch-normalised, then globally average-pooled
+- Projected to 512 dimensions via a linear layer + GELU + Dropout
+
+### TransformerBranch (Transformer Encoder)
+Models long-range dependencies between positions in the sequence.
+- Linear projection of 4-dim one-hot input to 256-dim embeddings
+- Learned positional embeddings (positions 1 … 300)
+- Learnable CLS token prepended; its final hidden state is used as the sequence representation
+- 4 Transformer encoder layers, 8 attention heads, pre-norm (`norm_first=True`)
+- Projected to 512 dimensions via a linear layer
+
+### Input Encoding
+Each nucleotide is mapped to a 4-dim one-hot vector:
+
+| Base | Encoding  |
+|------|-----------|
+| A    | [1, 0, 0, 0] |
+| C    | [0, 1, 0, 0] |
+| G    | [0, 0, 1, 0] |
+| T    | [0, 0, 0, 1] |
+| N    | [0, 0, 0, 0] |
+
+Sequences are truncated to 300 bp or zero-padded on the right if shorter.
+
+### Data Augmentation (training only)
+Two augmentations are applied online and independently at each sample:
+- **Reverse complement** — applied with 50% probability; the sequence is reverse-complemented (A↔T, C↔G) before encoding
+- **Random positional shift** — a random integer in [−5, +5] bp is drawn; positive values trim leading bases, negative values prepend N-padding
+
+### Training Details
+
+| Setting              | Value                                      |
+|----------------------|--------------------------------------------|
+| Loss                 | Focal Loss (α=0.75, γ=2.0, label smoothing ε=0.05) |
+| Optimizer            | AdamW (weight decay 1e-4)                  |
+| CNN branch LR        | 1e-4                                       |
+| Transformer LR       | 5e-5                                       |
+| LR schedule          | Linear warm-up (5 epochs) → cosine annealing |
+| Batch size           | 128                                        |
+| Max epochs           | 120                                        |
+| Early stopping       | Patience = 15 epochs on validation AUROC   |
+| Gradient clipping    | Max-norm = 1.0                             |
+| Mixed precision      | `torch.amp` (float16 forward pass)         |
+| Transformer warm-up  | Frozen for first 5 epochs, then unfrozen   |
+
+---
+
+## Results
+
+Performance on the ViraMiner test set:
+
+| Model        | AUROC     | AUPRC     |
+|--------------|-----------|-----------|
+| ViraMiner    | 0.923     | —         |
+| ViraExplorer | **0.939** | **0.569** |
+
+---
+
+## Reference
+
+Tampuu A, Bzhalava Z, Dillner J, Vicente R (2019). *ViraMiner: Deep learning on raw DNA sequences for identifying viral genomes in human samples.* PLOS ONE 14(9): e0222271. https://doi.org/10.1371/journal.pone.0222271
