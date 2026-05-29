@@ -199,6 +199,7 @@ Performance on the ViraMiner test set:
 | ViraMiner    | 0.923     | —         |
 | ViraExplorer | **0.939** | **0.569** |
 
+* AUPRC not reported in the original paper (Tampuu et al., 2019) 
 ---
 
 ## Reference
